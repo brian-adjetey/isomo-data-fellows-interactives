@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><link rel="icon" href="data:,"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repo Explorer: Isomo Data Fellows</title><link rel="stylesheet" href="../../assets/launch.css"><script src="../../assets/repo-explorer.js" defer></script></head><body>
+<a href="#main" class="skip">Skip to activity</a>
+<header><div><p class="eyebrow">Operational launch and Week 3 · synthetic training project</p><h1>An agent can open every file in this folder. Which ones may it change?</h1><p>You will map a small repository, sort agent actions into safe and unsafe, review a plan, then review what the agent actually changed. Nothing here touches a real machine or grants any permission.</p><ol class="steps" aria-label="Activity steps"><li>1 Map</li><li>2 Sort actions</li><li>3 Review the plan</li><li>4 Review the diff</li><li>5 Change the context</li></ol></div></header>
+<main id="main">
+<section aria-labelledby="q"><h2 id="q">The task you have been given</h2><p>The training report's heading says <strong>“Learners this run”</strong>, but every row in the data is an <em>event</em>, not a learner. Your supervisor has asked for one fix: change the heading to <strong>“Recorded events this run”</strong>. Before you let an agent act, you need a picture of the repository: what each part is for, which parts are evidence you must preserve, and which parts this task may touch.</p>
+<div class="legend" aria-label="Zone legend"><div class="z-instructions"><strong>Instructions</strong>: read first; they set purpose, limits and checks</div><div class="z-source"><strong>Source evidence</strong>: preserve byte-for-byte</div><div class="z-implementation"><strong>Implementation</strong>: changes behavior; needs a reviewed plan</div><div class="z-checks"><strong>Checks</strong>: tests of specific behavior; weakening one changes the rule</div><div class="z-communication"><strong>Communication</strong>: words a reader sees</div><div class="z-derived"><strong>Derived output</strong>: new per run; ignored by Git</div></div></section>
+
+<fieldset id="step1"><legend>Step 1 · Map the repository: predict first</legend>
+<p>Before opening anything: <strong>which files should this heading fix change?</strong> Tick every file you expect to change.</p>
+<div id="predict-list"></div>
+<button id="predict-check">Record my prediction</button>
+<div id="predict-feedback" class="result" role="status" aria-live="polite"></div>
+<div id="explore" hidden><h3>Now explore. Open the three instruction files at least.</h3><p class="small">Each file shows its zone, what it is for and a real excerpt from the training project.</p>
+<div class="grid"><ul class="tree" id="tree" aria-label="Training repository files"></ul><div class="panel"><p id="file-role"><strong>Select a file.</strong></p><pre id="file-content">No file opened.</pre><p id="file-git" class="small"></p></div></div>
+<p id="read-progress" class="progress" role="status" aria-live="polite"></p></div>
+</fieldset>
+
+<fieldset id="step2" disabled><legend>Step 2 · Sort the agent's possible actions</legend><p class="locked">Record your Step 1 prediction to open.</p>
+<p>An agent working on this task could do any of these. Sort each one. Use AGENTS.md and the runbook as your rulebook, not your sense of what would be convenient.</p>
+<div id="sort-list"></div>
+<button id="sort-check">Check my sorting</button>
+<div id="sort-feedback" class="result" role="status" aria-live="polite"></div>
+</fieldset>
+
+<fieldset id="step3" disabled><legend>Step 3 · Review the agent's plan before anything runs</legend><p class="locked">Check your sorting to open.</p>
+<p>You asked the agent to inspect without editing and propose a plan. It returned this. Decide on each step.</p>
+<div id="plan-list"></div>
+<button id="plan-check">Submit my plan review</button>
+<div id="plan-feedback" class="result" role="status" aria-live="polite"></div>
+</fieldset>
+
+<fieldset id="step4" disabled><legend>Step 4 · Review what actually changed</legend><p class="locked">Submit your plan review to open.</p>
+<p>You approved only: read the instructions, change the heading, run the tests, and generate a report in a <em>new</em> folder <code>runs/good-02</code>. The agent replies: <strong>“Done. Heading fixed and all tests pass.”</strong> Here is what you see when you check for yourself.</p>
+<div class="grid"><div><h3>git status --short</h3><pre id="status-view"></pre></div><div><h3>git diff</h3><pre class="diff" id="diff-view"></pre></div></div>
+<div id="diff-questions"></div>
+<button id="diff-check">Submit my review</button>
+<div id="diff-feedback" class="result" role="status" aria-live="polite"></div>
+</fieldset>
+
+<fieldset id="step5" disabled><legend>Step 5 · Same edit, different context</legend><p class="locked">Submit your diff review to open.</p>
+<p>The one-line heading edit can be fine in one context and forbidden in another. Set a context, <strong>predict</strong> the right decision, then reveal it. Change one condition at a time.</p>
+<div class="controls"><label>Environment <select id="environment"><option value="training">Training copy</option><option value="production">Production project</option></select></label><label>Task <select id="task"><option value="label">Correct the report heading</option><option value="identity">Fill a missing learner ID</option></select></label><label><input id="approval" type="checkbox"> Named reviewer approved this plan</label></div>
+<label for="decision-predict">Your prediction</label><select id="decision-predict"><option value="">Choose before revealing</option><option value="proceed">Proceed as a supervised rehearsal</option><option value="hold">Hold until something is established</option><option value="stop">Stop: outside this task or authority</option></select>
+<button id="review">Reveal the decision</button>
+<div class="result" id="result" role="status" aria-live="polite"></div>
+</fieldset>
+
+<section><h2>What the parts are called</h2><dl>
+<dt><strong>Repository</strong></dt><dd>A project folder whose history is tracked, so another person can see and recover changes. In Brian's workflow the repository is the unit of work: its instructions, data contract, code, checks and outputs travel together.</dd>
+<dt><strong>Working tree, staged, committed</strong></dt><dd>Your current files; the changes you selected for the next snapshot; a recorded snapshot. <code>git diff</code> shows unstaged edits to tracked files, <code>git diff --cached</code> shows staged edits, <code>git status --short</code> also lists untracked files (<code>??</code>). Ignored files such as <code>runs/</code> appear in none of these: open them directly.</dd>
+<dt><strong>Plan</strong></dt><dd>The agent's proposed steps before it acts. It is a reviewable artifact, not a formality.</dd>
+<dt><strong>Diff</strong></dt><dd>What actually changed. Compare it with the approved plan line by line.</dd>
+<dt><strong>Scope</strong></dt><dd>The files and actions a named reviewer approved. An agent's ability to do something is not permission to do it.</dd></dl></section>
+<section><h2>Failure modes this activity guards against</h2><p>An agent can make a failing check pass by weakening the check. It can make the data “agree” with a label by changing the data. It can report “all tests pass” without showing output. It can do the right edit in the wrong environment. Each of these looks like progress. The plan and diff review are where you catch them.</p></section>
+<section><h2>Isomo application</h2><p>Before any current-cohort task, complete the orientation worksheet for the <em>actual</em> repository: which files are instructions, which are source evidence, which command checks the work, and who approves a change. If any of those is unknown, stay in the synthetic rehearsal and ask your supervisor.</p></section>
+<section><h2>Transfer question</h2><p>A different project names its folders <code>incoming/</code>, <code>pipeline/</code>, <code>qa/</code> and <code>deliverables/</code>, and has no AGENTS.md. How would you establish which folder is source evidence and which is derived output without trusting the folder names? What would you read, what would you ask, and what would you refuse to let an agent do until you knew?</p></section>
+<button id="reset" class="secondary">Reset activity</button>
+<details><summary>Static / offline version</summary><p><strong>Step 1.</strong> Only <code>docs/report.md</code> changes. README, AGENTS and the runbook are instructions; <code>data/</code> is source evidence and must not change; <code>src/</code> and <code>tests/</code> are behavior and checks, outside this task; <code>runs/</code> holds new derived output and is ignored by Git.</p><p><strong>Step 2.</strong> Allowed now: reading the instructions; running the documented tests. Needs an approved plan: editing the heading; running the workflow into a new folder; committing. Stop: filling a missing ID in the data; changing a test so a held row passes; deleting an earlier run; installing a package; uploading a report publicly; <code>git reset --hard</code>.</p><p><strong>Step 3.</strong> Accept reading the instructions and changing the heading. Reject renaming a column in the data and editing the tests to match. Revise the final step to use a new folder such as <code>runs/good-02</code>.</p><p><strong>Step 4.</strong> The diff contains an unapproved change to <code>src/workflow.py</code> that stops held rows from blocking a run, and an untracked note file. Keep the heading change, ask the agent to revert and explain the code change, run the tests yourself (the missing-ID test would fail), confirm <code>data/</code> is unchanged and read the fresh report. Do not use <code>git reset --hard</code>, which would also destroy evidence.</p><p><strong>Step 5.</strong> Proceed only with training copy + heading task + reviewer approval + instructions read. Production or identity repair: stop. No approval: hold.</p></details>
+<noscript><p>JavaScript is disabled. Use the static version above and draw the repository map on paper with your instructor.</p></noscript>
+<footer class="small">AI_NATIVE_LAUNCH_v1 · Original synthetic teaching example based on the training repository · No tracking, network requests or stored responses. Return to your student guide after the transfer question.</footer>
+</main></body></html>

@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><link rel="icon" href="data:,"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Join and Identifier Simulator: Isomo Data Fellows</title><link rel="stylesheet" href="../../assets/launch.css"><script src="../../assets/join-ids.js" defer></script></head><body>
+<a href="#main" class="skip">Skip to activity</a>
+<header><div><p class="eyebrow">Week 2 · Trust the data · invented records</p><h1>Three learners went in. Why did five rows come out?</h1><p>A join connects rows whose keys match. It does not promise one row per learner, and it does not tell you which rows it left behind. In each scenario you predict first, then see every match.</p><ol class="steps" aria-label="Scenarios"><li>1 Left join</li><li>2 Inner join</li><li>3 Duplicate key</li><li>4 Wrong key</li><li>5 Isomo: Canvas export</li><li>Free practice</li></ol></div></header>
+<main id="main">
+<section aria-labelledby="how"><h2 id="how">How this works</h2><p>The <strong>roster</strong> is meant to have one row per learner (its <em>grain</em>). The <strong>events</strong> table has one row per event, so the same learner can appear many times there legitimately. For each scenario: read the tables, make both predictions, then reveal. The <strong>match map</strong> shows every pair of rows whose keys match; each ✓ becomes one output row.</p></section>
+
+<section id="scenario" aria-labelledby="sc-title">
+<h2 id="sc-title">Scenario</h2>
+<p id="sc-progress" class="progress"></p>
+<p id="sc-question"></p>
+<div class="cards"><div class="panel scroll" id="roster"></div><div class="panel scroll" id="events"></div></div>
+<fieldset id="predict"><legend>Predict before you reveal</legend>
+<label for="pred-rows">How many rows will the output have?</label><input id="pred-rows" type="number" min="0" max="50" step="1" inputmode="numeric">
+<p id="pred-choice-q"><strong></strong></p><div id="pred-choice"></div>
+<button id="reveal">Reveal the join</button>
+<p id="pred-msg" role="status" aria-live="polite"></p>
+</fieldset>
+<div id="outcome" hidden>
+<h3>What happened</h3>
+<div class="result" id="result" role="status" aria-live="polite"></div>
+<div class="stats" id="stats"></div>
+<div class="scroll" id="matrix"></div>
+<div class="scroll" id="output"></div>
+<div class="tray" id="tray"></div>
+<p id="mechanism"></p>
+<button id="next">Next scenario</button>
+</div>
+</section>
+
+<fieldset id="free" disabled><legend>Free practice · change one condition at a time</legend><p class="locked">Finish the five scenarios to open free practice.</p>
+<p>Uses the worked roster and events. Every change hides the result until you predict again.</p>
+<div class="controls"><label>Join <select id="join"><option value="left">Left: keep every roster row</option><option value="inner">Inner: keep matches only</option><option value="right">Right: keep every event row</option></select></label><label>Match on <select id="key"><option value="id">Learner ID</option><option value="name">Display name</option></select></label><label><input id="duplicate" type="checkbox"> Roster has B twice</label></div>
+<label for="free-pred">Predicted output rows</label><input id="free-pred" type="number" min="0" max="50" step="1" inputmode="numeric"> <button id="free-reveal">Reveal</button>
+<div class="result" id="free-result" role="status" aria-live="polite"></div>
+<div class="scroll" id="free-output"></div>
+</fieldset>
+
+<section><h2>The technical names</h2><dl>
+<dt><strong>Key</strong></dt><dd>The column used to decide which rows belong together. A <strong>stable identifier</strong> is meant to stay attached to the same learner across files and over time. A display name is not a key: two learners can share one, and one learner can be typed several ways.</dd>
+<dt><strong>Cardinality</strong></dt><dd>How many rows on one side can match a row on the other. One learner to many events (one-to-many) is expected. A roster key that appears twice breaks the roster's grain and multiplies every match.</dd>
+<dt><strong>Left, inner, right join</strong></dt><dd>Which side keeps its unmatched rows. The join type decides who silently disappears from your output.</dd>
+<dt><strong>Unmatched rows</strong></dt><dd>Rows on either side with no partner. They are evidence to reconcile, not noise to drop.</dd></dl></section>
+<section><h2>Failure modes</h2><p>A duplicated roster key inflates totals. A name-based match attaches one learner's events to another. An inner join hides learners with no activity and activity with no learner. Each output can look tidy. Count and inspect all three before you use a total.</p></section>
+<section><h2>Isomo application</h2><p>An Isomo report may need to match a platform export to a learner roster. The owner must confirm which identifier can link the records. When you join an export to the learner master, state the grain of each side, the key, the relationship you expect, and what you will do with unmatched or blank IDs <em>before</em> an agent writes the join. Never resolve a real identity by guessing, and never paste real learner rows into a prompt to “see what matches”.</p></section>
+<section><h2>Transfer question</h2><p>Baseline and endline test files are each meant to have one row per learner. After joining them on learner ID you get more rows than learners in either file. Name two different causes that could produce this, the check that would tell them apart, and why you should not report an “average improvement” until you know.</p></section>
+<button id="reset" class="secondary">Reset activity</button>
+<details><summary>Static / offline version</summary><p>Roster: A Aline U., B Aline U., C Cedric N. Events: E1 A (20 min), E2 A (15), E3 B (10), E4 X (5); source total 50 minutes.</p><p><strong>1 Left join on ID:</strong> A matches E1 and E2 (2 rows), B matches E3 (1), C matches nothing but is kept with a blank side (1) = 4 rows. E4 has no roster learner and is left out; output minutes 45, not 50.</p><p><strong>2 Inner join:</strong> only matches: 3 rows. C and E4 both disappear.</p><p><strong>3 B listed twice, left join:</strong> each B row matches E3, so E3 appears twice: 5 rows, and minutes rise to 55 although nothing new happened.</p><p><strong>4 Match on display name:</strong> A and B share “Aline U.”, so each matches E1, E2 and E3: 3 + 3 + 1 (C) = 7 rows. The totals for A and B now include each other's events.</p><p><strong>5 Canvas export to learner master:</strong> roster L-101, L-102, L-103; export SUB-1 L-101 Engage, SUB-2 L-101 Expand, SUB-3 L-102 Engage, SUB-4 L-104 Engage, SUB-5 blank Engage. Left join = 4 rows. Two of three roster learners submitted Engage (67%). SUB-4 and SUB-5 are held for the owner; they are not added to the numerator or the roster.</p></details>
+<noscript><p>JavaScript is disabled. Use the static version above and draw each match on paper.</p></noscript>
+<footer class="small">AI_NATIVE_LAUNCH_v1 · Invented codes and names, no learner data · No tracking, network requests or stored responses. Return to the Week 2 guide after the transfer question.</footer>
+</main></body></html>
