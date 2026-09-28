@@ -2,11 +2,11 @@
 const $ = id => document.getElementById(id);
 const el = (tag, props = {}, text) => { const n = document.createElement(tag); Object.assign(n, props); if (text !== undefined) n.textContent = text; return n; };
 
-// Excerpts mirror fixtures/synthetic/ai_native_v1/training_repo exactly enough to be recognisable.
+// Excerpts mirror fixtures/synthetic/ai_native_v1/training_repo exactly enough to be recognizable.
 const FILES = [
  {path:'README.md', zone:'instructions', label:'Instructions', change:false,
   role:'Purpose, map and the exact safe commands. Read before any command.',
-  text:'# Training repository: synthetic events only\n...It has no network, production configuration or genuine learner records.\nFolder access does not authorize a live task.\n\npython -m unittest discover -s tests -v\npython src/workflow.py --input data/good.csv --output runs/good-01',
+  text:'# Training repository: synthetic events only\n...It has no network access, no production settings and no real learner records.\nBeing able to open this folder does not authorize any live task.\n\npython -m unittest discover -s tests -v\npython src/workflow.py --input data/good.csv --output runs/good-01',
   git:'Tracked by Git.'},
  {path:'AGENTS.md', zone:'instructions', label:'Instructions', change:false,
   role:'The agent’s boundary. Ask the agent to read it and state the task limits before proposing a plan.',
@@ -14,7 +14,7 @@ const FILES = [
   git:'Tracked by Git.'},
  {path:'docs/runbook.md', zone:'instructions', label:'Instructions', change:false,
   role:'How to operate the workflow: the contract, checks, failure behavior and when to stop.',
-  text:'One row is an event. ... Repeated participant IDs across events are allowed.\nAny held row or empty input yields BLOCKED and exit 2.\nInvalid input is not repaired by rerunning. ... Never guess a missing identity.',
+  text:'One row is an event. ... A participant ID may repeat, because one participant can have several events.\nAny held row, or an empty file, makes the run BLOCKED, and the script exits with code 2.\nRerunning does not repair invalid input. ... Never guess a missing identity.',
   git:'Tracked by Git.'},
  {path:'data/good.csv', zone:'source', label:'Source evidence', change:false,
   role:'Synthetic source rows. Evidence to preserve, not a draft to tidy.',
@@ -62,7 +62,7 @@ const ACTIONS = [
  ['Upload report.html to a public link so the supervisor can see it','stop','Publishing is an external action. Reports go through an approved, access-controlled route.'],
  ['Run git reset --hard to tidy the workspace','stop','This discards uncommitted work, possibly someone else’s, and destroys the evidence you need to review.']
 ];
-const SORT_LABEL = {allowed:'Allowed now (read-only)', approval:'Only inside an approved plan', stop:'Stop: not part of this task'};
+const SORT_LABEL = {allowed:'Allowed now (no source or code changes)', approval:'Only inside an approved plan', stop:'Stop: not part of this task'};
 
 const PLAN = [
  ['Read README.md, AGENTS.md and docs/runbook.md to confirm scope.','accept','Good first step: the plan starts from the instructions.'],
@@ -83,7 +83,7 @@ const DIFF = [
 const PATHS = [
  ['docs/report.md','yes','In scope: this is the approved heading change.'],
  ['src/workflow.py','no','Out of scope, and dangerous: runs with held rows would no longer be BLOCKED, so missing.csv would produce a "validated" curated file. It is one short line; read it closely.'],
- ['agent_notes.md','no','Untracked (??). Not in the plan. It does not appear in git diff at all: only status reveals it. Ask what it contains before keeping it.']
+ ['agent_notes.md','no','Out of scope: untracked (??) and not in the plan. It does not appear in git diff at all; only status reveals it. Ask what it contains before keeping it.']
 ];
 const DECISIONS = [
  ['accept','Accept everything: the agent says the tests pass.','An assertion is not evidence. If you ran the tests, test_missing_stays_visible_and_blocks_curated would fail against this code.'],
@@ -91,11 +91,11 @@ const DECISIONS = [
  ['reset','Run git reset --hard and start over.','This destroys the evidence of what the agent did (and anyone else’s uncommitted work). Review first; revert narrowly.']
 ];
 const VERIFY = [
- ['tests','Run the tests myself and read the output',true,'Yes. Observed output replaces the agent’s claim.'],
- ['missing','Run data/missing.csv into a new folder and confirm it is still BLOCKED',true,'Yes. This directly tests the behavior the code change touched.'],
- ['data','Confirm git status shows no change under data/',true,'Yes. Source preservation is a mandatory gate.'],
- ['report','Open the new report.html and read the heading',true,'Yes. The tests do not check the heading; only you reading the output does.'],
- ['trust','Accept the agent’s summary because it has been reliable today',false,'No. A summary is a claim. Earlier reliability does not verify this change.']
+ ['tests','Run the tests myself and read the output',true,'Observed output replaces the agent’s claim.'],
+ ['missing','Run data/missing.csv into a new folder and confirm it is still BLOCKED',true,'This directly tests the behavior the code change touched.'],
+ ['data','Confirm git status shows no change under data/',true,'Source preservation is a mandatory gate.'],
+ ['report','Open the new report.html and read the heading',true,'The tests do not check the heading; only you reading the output does.'],
+ ['trust','Accept the agent’s summary because it has been reliable today',false,'A summary is a claim. Earlier reliability does not verify this change.']
 ];
 
 let visited = new Set(), predicted = false;
@@ -187,10 +187,10 @@ $('diff-check').addEventListener('click', () => {
  const fb = $('diff-feedback'); fb.replaceChildren();
  const scope = PATHS.map((p, i) => $('d' + i).value); const next = document.querySelector('input[name=next]:checked');
  if (scope.some(s => !s) || !next) { fb.textContent = 'Answer parts a and b before submitting.'; return; }
- PATHS.forEach(([p, want, why], i) => mark(fb, scope[i] === want, p + ': ' + (want === 'yes' ? 'in scope. ' : 'out of scope. ') + why));
+ PATHS.forEach(([p, want, why], i) => mark(fb, scope[i] === want, p + ': ' + why));
  const d = DECISIONS.find(x => x[0] === next.value); mark(fb, d[0] === 'partial', d[2]);
  const ticked = new Set([...document.querySelectorAll('input[name=verify]:checked')].map(x => x.value));
- VERIFY.forEach(([v, t, want, why]) => { if (ticked.has(v) !== want) mark(fb, false, (want ? 'Missing: ' : 'Remove: ') + t + '. ' + why); });
+ VERIFY.forEach(([v, t, want, why]) => { if (ticked.has(v) !== want) mark(fb, false, (want ? 'Add this check: ' : 'Remove this: ') + t + '. ' + why); });
  if (VERIFY.every(([v, , want]) => ticked.has(v) === want)) mark(fb, true, 'Your verification list covers the tests, the failure case, the source and the actual report.');
  $('step5').disabled = false;
 });
